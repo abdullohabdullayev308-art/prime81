@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRIME 81</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--g:#b8f542;--gdim:rgba(184,245,66,0.12);--gborder:rgba(184,245,66,0.25);--black:#0a0a0a;--card:#181818;--border:#242424;--text:#e8e8e8;--sub:#888;--muted:#444;--red:#ff4444;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+nav{position:fixed;top:0;left:0;right:0;background:rgba(10,10,10,0.97);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:100;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--g);}
+.nav-day{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sub);}
+.nav-day span{color:var(--g);font-weight:700;}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,0.98);border-top:1px solid var(--border);display:flex;z-index:100;}
+.tab{flex:1;padding:10px 2px 8px;text-align:center;cursor:pointer;border:none;background:none;color:var(--muted);font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'Inter',sans-serif;}
+.tab.active{color:var(--g);}
+.tab-icon{font-size:16px;}
+.page{display:none;padding:68px 14px 76px;max-width:480px;margin:0 auto;}
+.page.active{display:block;}
+.hero{text-align:center;padding:28px 0 20px;}
+.hero-num{font-family:'Bebas Neue',sans-serif;font-size:88px;line-height:1;color:var(--g);text-shadow:0 0 40px var(--gborder);}
+.hero-label{font-size:11px;letter-spacing:4px;color:var(--sub);text-transform:uppercase;margin-top:-4px;}
+.hero-date{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sub);margin-top:6px;}
+.progress-wrap{margin:16px 0;}
+.progress-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
+.progress-labels span:last-child{color:var(--g);}
+.progress-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--g);border-radius:2px;transition:width .5s ease;box-shadow:0 0 8px var(--gborder);}
+.stats-row{display:flex;gap:8px;margin-bottom:4px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;flex:1;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--g);line-height:1;}
+.stat-label{font-size:10px;color:var(--sub);margin-top:4px;letter-spacing:1px;text-transform:uppercase;}
+.section-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--sub);margin:24px 0 10px;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;margin-bottom:3px;user-select:none;transition:all .15s;}
+.check-item.done{background:var(--gdim);border-color:var(--gborder);}
+.check-box{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.check-item.done .check-box{background:var(--g);border-color:var(--g);}
+.check-tick{color:#000;font-size:11px;font-weight:900;display:none;}
+.check-item.done .check-tick{display:block;}
+.check-name{font-size:13px;font-weight:500;color:var(--text);}
+.check-item.done .check-name{color:var(--sub);text-decoration:line-through;}
+.check-sub{font-size:11px;color:var(--sub);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.check-text{flex:1;}
+.tag{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 6px;border-radius:3px;font-weight:700;flex-shrink:0;}
+.tag-must{background:rgba(255,68,68,.15);color:#ff6666;}
+.tag-body{background:var(--gdim);color:var(--g);}
+.tag-mind{background:rgba(100,150,255,.15);color:#88aaff;}
+.tag-groom{background:rgba(255,180,100,.15);color:#ffb464;}
+.tag-ielts{background:var(--gdim);color:var(--g);}
+.ex-sub{font-size:11px;color:var(--g);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:8px;}
+.phase-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.phase-label{font-size:10px;color:var(--sub);letter-spacing:2px;text-transform:uppercase;}
+.phase-name{font-size:15px;font-weight:700;color:var(--g);margin-top:4px;}
+.phase-detail{font-size:11px;color:var(--sub);font-family:'JetBrains Mono',monospace;}
+.day-tabs{display:flex;flex-wrap:wrap;margin-bottom:16px;}
+.day-tab{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--sub);margin-right:6px;margin-bottom:6px;font-family:'Inter',sans-serif;transition:all .15s;}
+.day-tab.active{background:var(--g);color:#000;border-color:var(--g);}
+.tl-wrap{margin-left:54px;}
+.tl-item{position:relative;border-left:1px solid var(--border);padding:0 0 18px 16px;}
+.tl-item:last-child{border-left:none;}
+.tl-time{position:absolute;left:-54px;top:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub);width:40px;text-align:right;}
+.tl-dot{position:absolute;left:-5px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--border);}
+.tl-dot.hi{background:var(--g);box-shadow:0 0 6px var(--gborder);}
+.tl-name{font-size:13px;font-weight:500;color:var(--sub);}
+.tl-name.hi{color:var(--text);}
+.tl-detail{font-size:11px;color:var(--sub);margin-top:2px;}
+.streak-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;}
+.streak-cell{aspect-ratio:1;border-radius:3px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--muted);font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .1s;}
+.streak-cell.done{background:var(--g);color:#000;font-weight:700;}
+.streak-cell.today{border:1.5px solid var(--g);}
+.streak-cell.future{opacity:.3;}
+.ring-wrap{display:flex;justify-content:center;margin-bottom:20px;position:relative;width:100px;margin:0 auto 20px;}
+.ring-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--g);}
+.rule-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:8px;}
+.rule-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.rule-icon{font-size:18px;}
+.rule-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.rule-title.green{color:var(--g);}
+.rule-title.red{color:var(--red);}
+.rule-list{list-style:none;}
+.rule-list li{font-size:12px;color:var(--sub);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;line-height:1.4;}
+.rule-list li:last-child{border:none;}
+.rule-list li::before{content:'—';color:var(--muted);flex-shrink:0;}
+.ex-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.ex-row:last-child{border:none;}
+.ex-row span:first-child{color:var(--text);}
+.ex-row span:last-child{color:var(--g);font-family:'JetBrains Mono',monospace;font-size:11px;}
+.bomb-card{background:linear-gradient(135deg,var(--gdim),rgba(184,245,66,.03));border:1px solid var(--gborder);border-radius:8px;padding:18px;margin-top:8px;}
+.bomb-phase{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:8px;}
+.bomb-text{font-size:13px;color:var(--sub);line-height:1.7;}
+.skill-bar-wrap{margin-bottom:10px;}
+.skill-bar-label{display:flex;justify-content:space-between;font-size:11px;font-family:'JetBrains Mono',monospace;margin-bottom:5px;}
+.skill-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.skill-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.shadow-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;}
+.shadow-cell{aspect-ratio:1;border-radius:3px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .1s;}
+.shadow-cell.done{background:var(--g);color:#000;font-weight:700;}
+.shadow-cell.today{border:1.5px solid var(--g);}
+.next-btn{background:var(--gdim);border:1px solid var(--gborder);color:var(--g);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;}
+.reset-btn{background:none;border:1px solid var(--border);color:var(--sub);padding:10px 20px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;width:100%;margin-top:14px;transition:all .15s;}
+.toast{position:fixed;top:62px;left:50%;transform:translateX(-50%);background:var(--g);color:#000;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;white-space:nowrap;}
+.toast.show{opacity:1;}
+.football-msg{padding:12px 14px;color:var(--sub);font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:8px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">PRIME 81</div>
+  <div class="nav-day">DAY <span id="navDay">1</span> / 81</div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- TODAY -->
+<div class="page active" id="page-today">
+  <div class="hero">
+    <div class="hero-num" id="heroDay">1</div>
+    <div class="hero-label">Day of Transformation</div>
+    <div class="hero-date" id="heroDate"></div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-labels"><span>PROGRESS</span><span id="pct">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="pFill" style="width:0%"></div></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="doneC">0</div><div class="stat-label">Done today</div></div>
+    <div class="stat-card"><div class="stat-val" id="totalC">0</div><div class="stat-label">Total tasks</div></div>
+  </div>
+  <div class="section-title">Non-Negotiable</div><div class="checklist" id="mustList"></div>
+  <div class="section-title">Body</div><div class="checklist" id="bodyList"></div>
+  <div class="section-title">Mind & Skills</div><div class="checklist" id="mindList"></div>
+  <div class="section-title">Appearance</div><div class="checklist" id="groomList"></div>
+  <button class="reset-btn" onclick="resetToday()">Reset Today</button>
+</div>
+
+<!-- SCHEDULE -->
+<div class="page" id="page-schedule">
+  <div class="section-title" style="margin-top:8px">Daily Schedule</div>
+  <div class="day-tabs" id="dayTabs"></div>
+  <div class="tl-wrap"><div class="timeline" id="timeline"></div></div>
+</div>
+
+<!-- WORKOUT -->
+<div class="page" id="page-workout">
+  <div class="hero" style="padding:20px 0 12px">
+    <div class="hero-num" id="wDoneCount">0</div>
+    <div class="hero-label">Exercises Done</div>
+  </div>
+  <div class="phase-card">
+    <div><div class="phase-label">Current Phase</div><div class="phase-name" id="wPhaseName">Phase 1</div></div>
+    <div class="phase-detail" id="wPhaseDetail">Upper Body Only</div>
+  </div>
+  <div class="section-title">🦵 Knee / Ankle — Morning</div><div class="checklist" id="kneeList"></div>
+  <div class="section-title">🔥 ABS — Every Evening</div><div class="checklist" id="absList"></div>
+  <div class="section-title" id="mainTitle">💪 Main Workout — Dumbbell</div><div class="checklist" id="mainList"></div>
+  <button class="reset-btn" onclick="resetWorkout()">Reset Today's Workout</button>
+</div>
+
+<!-- IELTS -->
+<div class="page" id="page-ielts">
+  <div class="hero" style="padding:20px 0 12px">
+    <div class="hero-num" id="iDoneCount">0</div>
+    <div class="hero-label">Tasks Complete Today</div>
+  </div>
+  <div class="section-title">Skill Progress</div>
+  <div id="skillBars"></div>
+  <div class="section-title">Today's Block</div><div class="checklist" id="ieltsList"></div>
+  <div class="section-title">101 History — Speaking</div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div><div style="font-size:10px;color:var(--sub);font-family:'JetBrains Mono',monospace" id="hNum">Event #1</div><div style="font-size:14px;font-weight:600;margin-top:4px" id="hEvent"></div></div>
+      <button class="next-btn" onclick="nextH()">Next →</button>
+    </div>
+    <div style="font-size:11px;color:var(--sub);line-height:1.5">Read → record voice message → no script, just speak.</div>
+  </div>
+  <div class="section-title">Writing Task 2</div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:10px;color:var(--sub);font-family:'JetBrains Mono',monospace" id="wNum">Topic #1</div>
+      <button class="next-btn" onclick="nextW()">Next →</button>
+    </div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:8px;line-height:1.5" id="wTopic"></div>
+    <div style="font-size:11px;color:var(--sub)">Target: 250+ words · 40 min · Use your ideas book</div>
+  </div>
+  <div class="section-title">Shadowing — 20 Day Streak</div>
+  <div class="shadow-grid" id="shadowGrid"></div>
+  <button class="reset-btn" onclick="resetIelts()">Reset Today's IELTS</button>
+</div>
+
+<!-- PROGRESS -->
+<div class="page" id="page-streak">
+  <div class="section-title" style="margin-top:8px">81-Day Progress</div>
+  <div class="ring-wrap">
+    <svg viewBox="0 0 100 100" width="100" height="100" style="transform:rotate(-90deg)">
+      <circle cx="50" cy="50" r="44" fill="none" stroke="#242424" stroke-width="6"/>
+      <circle cx="50" cy="50" r="44" fill="none" stroke="#b8f542" stroke-width="6" stroke-linecap="round" stroke-dasharray="276.46" id="ringFill" stroke-dashoffset="276.46" style="filter:drop-shadow(0 0 4px rgba(184,245,66,.5))"/>
+    </svg>
+    <div class="ring-pct" id="ringPct">0%</div>
+  </div>
+  <div class="stats-row" style="margin-bottom:16px">
+    <div class="stat-card"><div class="stat-val" id="streakNum">0</div><div class="stat-label">Day Streak</div></div>
+    <div class="stat-card"><div class="stat-val" id="daysLeft">81</div><div class="stat-label">Days Left</div></div>
+  </div>
+  <div class="section-title">Day Grid</div>
+  <div class="streak-grid" id="streakGrid"></div>
+</div>
+
+<!-- RULES -->
+<div class="page" id="page-rules">
+  <div class="section-title" style="margin-top:8px">The Laws</div>
+  <div class="rule-card"><div class="rule-header"><span class="rule-icon">⚡</span><span class="rule-title green">Must Do</span></div><ul class="rule-list"><li>Wake 6:00 AM — no phone first thing</li><li>5 daily prayers — on time, every time</li><li>500 Salawat on the Prophet ﷺ — daily</li><li>Knee/ankle routine every single morning</li><li>Hard tasks before rewards always</li><li>Sleep by 22:00 — protect melatonin</li><li>Book before bed — no screens after 21:45</li><li>Reduce portions 20-25%, water before meals</li></ul></div>
+  <div class="rule-card"><div class="rule-header"><span class="rule-icon">🚫</span><span class="rule-title red">Must Not</span></div><ul class="rule-list"><li>Reels, Shorts, TikTok — zero tolerance</li><li>Phone for entertainment or scrolling</li><li>Cinema before Math + IELTS done</li><li>Eat after 20:00</li><li>Skip knee routine — it protects your football</li><li>Change the plan when excitement fades</li><li>Sleep past 6:00 or stay up past 22:00</li></ul></div>
+  <div class="rule-card"><div class="rule-header"><span class="rule-icon">✅</span><span class="rule-title green">Allowed</span></div><ul class="rule-list"><li>Unlimited books and high-quality podcasts</li><li>Cinema — laptop only, after work done</li><li>Music during dumbbell sessions</li><li>Drawing as wind-down activity</li><li>Full cinema day on Sundays</li></ul></div>
+  <div class="rule-card"><div class="rule-header"><span class="rule-icon">🧠</span><span class="rule-title red">Mental Discipline</span></div><ul class="rule-list"><li>No pornography or artificial stimuli — it rewires dopamine and kills drive</li><li>No masturbation — your energy is a resource, protect it</li><li>When the urge hits — get up, drink water, do 20 push-ups or go outside</li><li>This is not shame. It is choosing who you want to become</li></ul></div>
+
+  <div class="section-title">🦵 Knee / Ankle</div>
+  <div class="rule-card"><div class="rule-list" style="list-style:none"><div class="ex-row"><span>Calf Raises</span><span>3 × 20</span></div><div class="ex-row"><span>Ankle Circles</span><span>30 sec each</span></div><div class="ex-row"><span>Wall Sit</span><span>3 × 20 sec</span></div><div class="ex-row"><span>Straight Leg Raises</span><span>3 × 15</span></div><div class="ex-row"><span>Glute Bridges</span><span>3 × 15</span></div></div></div>
+
+  <div class="section-title">🔥 ABS — Weeks 1–3</div>
+  <div class="rule-card"><div class="ex-row"><span>Crunches</span><span>3 × 20</span></div><div class="ex-row"><span>Leg Raises</span><span>3 × 15</span></div><div class="ex-row"><span>Bicycle Crunches</span><span>3 × 20</span></div><div class="ex-row"><span>Plank</span><span>3 × 30 sec</span></div><div class="ex-row"><span>Russian Twists</span><span>3 × 20 bw</span></div></div>
+  <div class="section-title">🔥 ABS — Weeks 4–8</div>
+  <div class="rule-card"><div class="ex-row"><span>Knee Raises</span><span>3 × 15</span></div><div class="ex-row"><span>Decline Crunches</span><span>3 × 20</span></div><div class="ex-row"><span>Flutter Kicks</span><span>3 × 30 sec</span></div><div class="ex-row"><span>Side Plank</span><span>3 × 20 sec each</span></div><div class="ex-row"><span>Russian Twists</span><span>3 × 25 — 2kg</span></div></div>
+  <div class="section-title">🔥 ABS — Weeks 9–11</div>
+  <div class="rule-card"><div class="ex-row"><span>Knee Raises</span><span>4 × 15</span></div><div class="ex-row"><span>Decline Crunches</span><span>4 × 20</span></div><div class="ex-row"><span>Flutter Kicks</span><span>4 × 30 sec</span></div><div class="ex-row"><span>Side Plank</span><span>4 × 30 sec each</span></div><div class="ex-row"><span>Russian Twists</span><span>4 × 25 — 6kg</span></div><div class="ex-row"><span>Plank Hold</span><span>4 × 45 sec</span></div></div>
+
+  <div class="section-title">💪 Main — Weeks 1–3</div>
+  <div class="rule-card"><div class="ex-row"><span>Push Ups</span><span>3 × 15 bw</span></div><div class="ex-row"><span>Dumbbell Rows</span><span>3 × 12 — 6kg</span></div><div class="ex-row"><span>Shoulder Press</span><span>3 × 12 — 6kg</span></div><div class="ex-row"><span>Bicep Curls</span><span>3 × 12 — 6kg</span></div><div class="ex-row"><span>Tricep Kickbacks</span><span>3 × 12 — 6kg</span></div><div class="ex-row"><span>Plank</span><span>3 × 30 sec</span></div></div>
+  <div class="section-title">💪 Main — Weeks 4–8</div>
+  <div class="rule-card"><div class="ex-row"><span>Push Ups</span><span>3 × 15</span></div><div class="ex-row"><span>Dumbbell Rows</span><span>3 × 12 — 8kg</span></div><div class="ex-row"><span>Shoulder Press</span><span>3 × 12 — 8kg</span></div><div class="ex-row"><span>Bicep Curls</span><span>3 × 12 — 8kg</span></div><div class="ex-row"><span>Tricep Kickbacks</span><span>3 × 12 — 8kg</span></div><div class="ex-row"><span>Goblet Squat</span><span>3 × 15 — 8kg</span></div><div class="ex-row"><span>Romanian Deadlift</span><span>3 × 12 — 8kg</span></div><div class="ex-row"><span>Reverse Lunges</span><span>3 × 10 each — 6kg</span></div></div>
+  <div class="section-title">💪 Main — Weeks 9–11</div>
+  <div class="rule-card"><div class="ex-row"><span>Push Ups</span><span>4 × 20</span></div><div class="ex-row"><span>Dumbbell Rows</span><span>4 × 12 — 8kg</span></div><div class="ex-row"><span>Shoulder Press</span><span>4 × 12 — 8kg</span></div><div class="ex-row"><span>Bicep Curls</span><span>4 × 12 — 8kg</span></div><div class="ex-row"><span>Tricep Kickbacks</span><span>4 × 12 — 8kg</span></div><div class="ex-row"><span>Goblet Squat</span><span>4 × 15 — 8kg</span></div><div class="ex-row"><span>Romanian Deadlift</span><span>4 × 12 — 8kg</span></div><div class="ex-row"><span>Reverse Lunges</span><span>4 × 12 each — 8kg</span></div></div>
+
+  <div class="bomb-card"><div class="bomb-phase">The Bomb Rule</div><div class="bomb-text"><strong style="color:var(--text)">Days 1–14:</strong> You feel unstoppable. Use it.<br><br><strong style="color:var(--text)">Days 15–21:</strong> Motivation disappears. The morning routine runs on autopilot. Trust it.<br><br><strong style="color:var(--text)">Days 22+:</strong> You're no longer doing this from excitement. You're doing it from identity.</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('today',this)"><span class="tab-icon">◎</span>Today</button>
+  <button class="tab" onclick="switchTab('schedule',this)"><span class="tab-icon">▤</span>Schedule</button>
+  <button class="tab" onclick="switchTab('workout',this)"><span class="tab-icon">💪</span>Workout</button>
+  <button class="tab" onclick="switchTab('ielts',this)"><span class="tab-icon">✦</span>IELTS</button>
+  <button class="tab" onclick="switchTab('streak',this)"><span class="tab-icon">▦</span>Progress</button>
+  <button class="tab" onclick="switchTab('rules',this)"><span class="tab-icon">⚡</span>Rules</button>
+</div>
+
+<script>
+// ── STORAGE (localStorage — saves permanently) ───────────
+const LS = {
+  get:(k)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch{return null;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+};
+
+// ── START DATE ───────────────────────────────────────────
+const START = (()=>{
+  let s=LS.get('p81_start');
+  if(!s){const d=new Date();d.setHours(0,0,0,0);s=d.toISOString();LS.set('p81_start',s);}
+  return new Date(s);
+})();
+
+function getDay(){
+  const now=new Date();now.setHours(0,0,0,0);
+  return Math.max(1,Math.min(Math.floor((now-START)/86400000)+1,81));
+}
+
+function getDayType(){
+  const dow=new Date().getDay();
+  if(dow===0)return'sunday';
+  if(dow===1||dow===3||dow===5)return'football';
+  return'dumbbell';
+}
+
+// ── TASKS ────────────────────────────────────────────────
+function getTasks(type){
+  const must=[
+    {id:'wake',name:'Wake 6:00 AM',sub:'No phone first',tag:'must'},
+    {id:'knee',name:'Knee/Ankle Routine',sub:'10 min — every morning',tag:'must'},
+    {id:'prayer',name:'5 Daily Prayers',sub:'Fajr · Dhuhr · Asr · Maghrib · Isha — on time',tag:'must'},
+    {id:'salawat',name:'500 Salawat ﷺ',sub:'On the Prophet — throughout the day',tag:'must'},
+    {id:'sleep',name:'Sleep by 22:00',sub:'Book before bed, no screens 21:45',tag:'must'},
+  ];
+  const bodyF=[
+    {id:'football',name:'Football Session',sub:'5:45 → 7:10 — full intensity',tag:'body'},
+    {id:'abs_f',name:'ABS Training',sub:'15 min after shower',tag:'body'},
+    {id:'steps',name:'10,000 Steps',sub:'Walk to/from training counts',tag:'body'},
+  ];
+  const bodyD=[
+    {id:'dumbbells',name:'Dumbbell Session',sub:'25 min before shower',tag:'body'},
+    {id:'abs_d',name:'ABS Training',sub:'15 min — same block',tag:'body'},
+    {id:'steps',name:'10,000 Steps',sub:'Daily movement baseline',tag:'body'},
+  ];
+  const bodyS=[
+    {id:'abs_s',name:'ABS Training',sub:'15 min — whenever feels right',tag:'body'},
+    {id:'walk',name:'Light Walk',sub:'Recovery movement',tag:'body'},
+  ];
+  const mindF=[
+    {id:'deepwork',name:'Deep Work Block',sub:'7:00 — homework + study',tag:'mind'},
+    {id:'ielts',name:'IELTS Block',sub:'2 hours — after class',tag:'mind'},
+    {id:'reading',name:'Book — 50 Pages',sub:'Afternoon — no skipping',tag:'mind'},
+    {id:'handwriting',name:'Handwriting Practice',sub:'15 min — pen only',tag:'mind'},
+  ];
+  const mindD=[
+    {id:'deepwork',name:'Deep Work + Math',sub:'7:00 — personal study + homework',tag:'mind'},
+    {id:'ielts',name:'IELTS Block',sub:'2 hours — afternoon',tag:'mind'},
+    {id:'reading',name:'Book — 50 Pages',sub:'Evening — earn it',tag:'mind'},
+    {id:'handwriting',name:'Handwriting Practice',sub:'15 min — pen only',tag:'mind'},
+    {id:'drawing',name:'Drawing Practice',sub:'Wind-down — beginner, just start',tag:'mind'},
+  ];
+  const mindS=[
+    {id:'review',name:'Weekly Review',sub:'20 min — honest, what worked/failed',tag:'mind'},
+    {id:'ielts_s',name:'IELTS Light',sub:'1.5 hours — no pressure',tag:'mind'},
+    {id:'reading',name:'Book — 50 Pages',sub:'Free day — read more if you want',tag:'mind'},
+    {id:'cinema',name:'Cinema / Music / Free',sub:'Full reward day',tag:'mind'},
+  ];
+  const groom=[
+    {id:'gw',name:'2 Glasses of Water',sub:'First thing on wake',tag:'groom'},
+    {id:'gf1',name:'Cold Face Wash — Morning',sub:'Gentle, cold water',tag:'groom'},
+    {id:'gt',name:'Brush Teeth',sub:'Morning + before sleep',tag:'groom'},
+    {id:'gf2',name:'Cold Face Wash — Evening',sub:'Second wash',tag:'groom'},
+    {id:'gn',name:'Nails Check',sub:'Clean and trimmed — weekly',tag:'groom'},
+    {id:'gs',name:'Sleep on Back',sub:'Protect skin, reduce puffiness',tag:'groom'},
+  ];
+  if(type==='football')return{must,body:bodyF,mind:mindF,groom};
+  if(type==='dumbbell')return{must,body:bodyD,mind:mindD,groom};
+  return{must,body:bodyS,mind:mindS,groom};
+}
+
+// ── WORKOUT DATA ─────────────────────────────────────────
+const KNEE=[
+  {id:'k1',name:'Calf Raises',sub:'3 × 20 — slow and controlled'},
+  {id:'k2',name:'Ankle Circles',sub:'30 sec each ankle — both directions'},
+  {id:'k3',name:'Wall Sit',sub:'3 × 20 sec — back flat on wall'},
+  {id:'k4',name:'Straight Leg Raises',sub:'3 × 15 — core tight'},
+  {id:'k5',name:'Glute Bridges',sub:'3 × 15 — squeeze at top'},
+];
+const ABS={
+  1:[{id:'a1',name:'Crunches',sub:'3 × 20'},{id:'a2',name:'Leg Raises',sub:'3 × 15'},{id:'a3',name:'Bicycle Crunches',sub:'3 × 20'},{id:'a4',name:'Plank',sub:'3 × 30 sec'},{id:'a5',name:'Russian Twists',sub:'3 × 20 — bodyweight'}],
+  2:[{id:'a1',name:'Knee Raises',sub:'3 × 15'},{id:'a2',name:'Decline Crunches',sub:'3 × 20'},{id:'a3',name:'Flutter Kicks',sub:'3 × 30 sec'},{id:'a4',name:'Side Plank',sub:'3 × 20 sec each'},{id:'a5',name:'Russian Twists',sub:'3 × 25 — 2kg'}],
+  3:[{id:'a1',name:'Knee Raises',sub:'4 × 15'},{id:'a2',name:'Decline Crunches',sub:'4 × 20'},{id:'a3',name:'Flutter Kicks',sub:'4 × 30 sec'},{id:'a4',name:'Side Plank',sub:'4 × 30 sec each'},{id:'a5',name:'Russian Twists',sub:'4 × 25 — 6kg'},{id:'a6',name:'Plank Hold',sub:'4 × 45 sec'}],
+};
+const MAIN={
+  1:[{id:'m1',name:'Push Ups',sub:'3 × 15 — bodyweight'},{id:'m2',name:'Dumbbell Rows',sub:'3 × 12 each — 6kg'},{id:'m3',name:'Shoulder Press',sub:'3 × 12 — 6kg'},{id:'m4',name:'Bicep Curls',sub:'3 × 12 — 6kg'},{id:'m5',name:'Tricep Kickbacks',sub:'3 × 12 — 6kg'},{id:'m6',name:'Plank',sub:'3 × 30 sec'}],
+  2:[{id:'m1',name:'Push Ups',sub:'3 × 15'},{id:'m2',name:'Dumbbell Rows',sub:'3 × 12 — 8kg'},{id:'m3',name:'Shoulder Press',sub:'3 × 12 — 8kg'},{id:'m4',name:'Bicep Curls',sub:'3 × 12 — 8kg'},{id:'m5',name:'Tricep Kickbacks',sub:'3 × 12 — 8kg'},{id:'m6',name:'Goblet Squat',sub:'3 × 15 — 8kg'},{id:'m7',name:'Romanian Deadlift',sub:'3 × 12 — 8kg'},{id:'m8',name:'Reverse Lunges',sub:'3 × 10 each — 6kg'}],
+  3:[{id:'m1',name:'Push Ups',sub:'4 × 20'},{id:'m2',name:'Dumbbell Rows',sub:'4 × 12 — 8kg'},{id:'m3',name:'Shoulder Press',sub:'4 × 12 — 8kg'},{id:'m4',name:'Bicep Curls',sub:'4 × 12 — 8kg'},{id:'m5',name:'Tricep Kickbacks',sub:'4 × 12 — 8kg'},{id:'m6',name:'Goblet Squat',sub:'4 × 15 — 8kg'},{id:'m7',name:'Romanian Deadlift',sub:'4 × 12 — 8kg'},{id:'m8',name:'Reverse Lunges',sub:'4 × 12 each — 8kg'}],
+};
+
+// ── SCHEDULE DATA ────────────────────────────────────────
+const SCH={
+  football:[
+    {t:'6:00',n:'Wake — no phone',hi:1},{t:'6:05',n:'Knee/Ankle Routine',d:'10 min',hi:1},{t:'6:15',n:'Breakfast',d:'Fuel up'},{t:'6:45',n:'Deep Work',d:'Homework + study'},{t:'8:00',n:'Math Class',d:'→ 10:20'},{t:'10:30',n:'Remaining Homework',d:'If any'},{t:'11:30',n:'IELTS Block',d:'2 hours',hi:1},{t:'13:30',n:'Lunch + Rest',d:'No screens'},{t:'14:30',n:'Reading + Handwriting',d:'50 pages + 15 min pen',hi:1},{t:'17:35',n:'Walk to Football',d:'10 min'},{t:'17:45',n:'Football',d:'→ 19:10 full intensity',hi:1},{t:'19:10',n:'Walk Home'},{t:'19:20',n:'Shower'},{t:'19:40',n:'Dinner',d:'No eating after 20:00'},{t:'20:10',n:'ABS Training',d:'15 min',hi:1},{t:'20:30',n:'Homework Review',d:'If needed'},{t:'21:00',n:'Book',d:'30-45 min wind down',hi:1},{t:'21:45',n:'Phone Down',d:'No screens'},{t:'22:00',n:'Sleep',hi:1},
+  ],
+  dumbbell:[
+    {t:'6:00',n:'Wake — no phone',hi:1},{t:'6:05',n:'Knee/Ankle Routine',d:'10 min',hi:1},{t:'6:15',n:'Breakfast'},{t:'6:45',n:'Deep Work',d:'Math + homework'},{t:'10:00',n:'Math Class',d:'→ 12:20'},{t:'12:30',n:'Lunch + Rest'},{t:'13:30',n:'Remaining Homework',d:'If any'},{t:'14:30',n:'IELTS Block',d:'2 hours',hi:1},{t:'16:30',n:'Dumbbell + ABS',d:'40 min total',hi:1},{t:'17:10',n:'Shower'},{t:'17:30',n:'Reading + Handwriting',d:'50 pages + 15 min pen',hi:1},{t:'19:30',n:'Drawing Practice',d:'Wind-down'},{t:'20:30',n:'Book',d:'30-45 min',hi:1},{t:'21:15',n:'Phone Down'},{t:'22:00',n:'Sleep',hi:1},
+  ],
+  sunday:[
+    {t:'6:00',n:'Wake',hi:1},{t:'6:05',n:'Knee/Ankle Routine',d:'10 min',hi:1},{t:'6:30',n:'Breakfast'},{t:'7:00',n:'Weekly Review',d:'20 min — honest',hi:1},{t:'7:20',n:'IELTS Light',d:'1.5 hours',hi:1},{t:'9:00',n:'Full Free Day',d:'Cinema / music / walk'},{t:'15:00',n:'ABS',d:'Whenever feels right',hi:1},{t:'20:30',n:'Book',d:'Wind down',hi:1},{t:'21:15',n:'Phone Down'},{t:'22:00',n:'Sleep',hi:1},
+  ],
+};
+
+const HISTORY=['The Fall of the Roman Empire','The Black Death in Europe','The French Revolution','The Discovery of America','The First World War','The Second World War','The Industrial Revolution','The Renaissance','The Cold War','The Moon Landing','The Mongol Empire','The Ottoman Empire','The Russian Revolution','The Chinese Revolution','The Crusades','The Age of Exploration','The Protestant Reformation','The American Revolution','The Abolition of Slavery','The Rise of Islam','The Fall of Constantinople','The Spanish Inquisition','The Magna Carta','The Printing Press Invention','The Atomic Bomb','The Fall of the Berlin Wall','The Assassination of Julius Caesar','The Battle of Thermopylae','The Egyptian Pyramids','Genghis Khan and the Mongol Conquest','The Viking Age','The Byzantine Empire','The Silk Road','The Plague of Justinian','The English Civil War','The Napoleonic Wars','The Hundred Years War','The Treaty of Westphalia','The Boston Tea Party','The Scramble for Africa','The Opium Wars','The Meiji Restoration','The Korean War','The Vietnam War','The Cuban Missile Crisis','The Civil Rights Movement','The Holocaust','The Arab-Israeli Conflict','The Partition of India','The Space Race','The Great Wall of China','Alexander the Great','The Persian Wars','The Peloponnesian War','The Han Dynasty','The Tang Dynasty','The Song Dynasty','The Mughal Empire','The British Empire','The Scientific Revolution','The Enlightenment','The Agricultural Revolution','The Digital Revolution','The United Nations Formation','The Suffragette Movement','The Labor Movement','The Great Depression','The Wall Street Crash','The Suez Crisis','The Rwandan Genocide','Apartheid in South Africa','The Iranian Revolution','The Gulf War','September 11 Attacks','The War in Afghanistan','The Iraq War','The Arab Spring','The Chernobyl Disaster','The Titanic Sinking','Assassination of Archduke Franz Ferdinand','The Nuremberg Trials','The Marshall Plan','The Decolonization of Africa','The Independence of India','The Chinese Cultural Revolution','The Khmer Rouge','The Yugoslav Wars','The Dissolution of the Soviet Union','The Good Friday Agreement','The Oslo Accords','The COVID-19 Pandemic','The Rise of China','The European Union Formation','The Internet Revolution','The Space Shuttle Program','The Green Revolution','Alexander the Great conquers Persia','The Reformation of the Catholic Church'];
+
+const WRITING=['Universities should provide workplace skills vs education has a different purpose. Discuss both views.','Animals and plants are declining worldwide. Why? What can be done?','Children should have more freedom vs more control. Discuss both and give your opinion.','Working from home — advantages and disadvantages.','Longer prison sentences vs better alternatives to reduce crime. Discuss both views.','Social media has a negative effect on individuals and society. To what extent do you agree?','Government pays for all medical costs. Is this positive or negative?','Sport is important to society vs just a leisure activity. Discuss both views.','Parents give young children smartphones. Do advantages outweigh disadvantages?','Schools should teach children to manage money. Do you agree?','The world consumes more natural resources than ever. Causes and measures?','Competition in children should be encouraged vs it is harmful. Discuss both.','Cities have a shortage of affordable housing. Causes and solutions?','Growing up in the city vs the countryside is better. Discuss both.','The gap between rich and poor is growing. Causes and what governments can do?','Art is essential to society vs a waste of resources. Discuss both.','Only governments can help the environment — individuals cannot. To what extent do you agree?','Traditional values are more important than modern values. Do you agree?','Tourism benefits vs negative effects on local communities. Discuss both sides.','Working hours should be reduced vs longer hours lead to success. Discuss and give opinion.'];
+
+// ── RENDER HELPERS ───────────────────────────────────────
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1400);
+}
+
+function makeCheckList(el,items,checked,onToggle,exMode=false){
+  el.innerHTML='';
+  items.forEach(item=>{
+    const done=!!checked[item.id];
+    const div=document.createElement('div');
+    div.className='check-item'+(done?' done':'');
+    div.innerHTML=`<div class="check-box"><span class="check-tick">✓</span></div><div class="check-text"><div class="check-name">${item.name}</div><div class="${exMode?'ex-sub':'check-sub'}">${item.sub}</div></div>${item.tag?`<span class="tag tag-${item.tag}">${item.tag}</span>`:''}`;
+    div.onclick=()=>onToggle(item.id);
+    el.appendChild(div);
+  });
+}
+
+// ── TODAY ────────────────────────────────────────────────
+function renderToday(){
+  const day=getDay();
+  const type=getDayType();
+  const tasks=getTasks(type);
+  const key='p81_today_'+day;
+  const checked=LS.get(key)||{};
+
+  document.getElementById('heroDay').textContent=day;
+  document.getElementById('navDay').textContent=day;
+  document.getElementById('heroDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+
+  const all=[...tasks.must,...tasks.body,...tasks.mind,...tasks.groom];
+  const done=all.filter(t=>checked[t.id]).length;
+  const p=Math.round(done/all.length*100);
+
+  document.getElementById('doneC').textContent=done;
+  document.getElementById('totalC').textContent=all.length;
+  document.getElementById('pct').textContent=p+'%';
+  document.getElementById('pFill').style.width=p+'%';
+
+  const toggle=(id)=>{checked[id]=!checked[id];LS.set(key,checked);toast(checked[id]?'✓ Done':'Unmarked');renderToday();renderStreak();};
+
+  makeCheckList(document.getElementById('mustList'),tasks.must,checked,toggle);
+  makeCheckList(document.getElementById('bodyList'),tasks.body,checked,toggle);
+  makeCheckList(document.getElementById('mindList'),tasks.mind,checked,toggle);
+  makeCheckList(document.getElementById('groomList'),tasks.groom,checked,toggle);
+
+  if(done===all.length)LS.set('p81_complete_'+day,'1');
+}
+
+function resetToday(){const day=getDay();LS.set('p81_today_'+day,{});renderToday();}
+
+// ── SCHEDULE ─────────────────────────────────────────────
+const DNAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DTYPES=['sunday','football','dumbbell','football','dumbbell','football','dumbbell'];
+let activeSDay=new Date().getDay();
+
+function renderSchedule(){
+  const tabs=document.getElementById('dayTabs');
+  tabs.innerHTML='';
+  DNAMES.forEach((n,i)=>{
+    const b=document.createElement('button');
+    b.className='day-tab'+(i===activeSDay?' active':'');
+    b.textContent=n;b.onclick=()=>{activeSDay=i;renderSchedule();};
+    tabs.appendChild(b);
+  });
+  const items=SCH[DTYPES[activeSDay]];
+  const tl=document.getElementById('timeline');
+  tl.innerHTML='';
+  items.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='tl-item';
+    div.innerHTML=`<div class="tl-time">${item.t}</div><div class="tl-dot${item.hi?' hi':''}"></div><div><div class="tl-name${item.hi?' hi':''}">${item.n}</div>${item.d?`<div class="tl-detail">${item.d}</div>`:''}</div>`;
+    tl.appendChild(div);
+  });
+}
+
+// ── WORKOUT ──────────────────────────────────────────────
+function getPhase(){const d=getDay();return d<=21?1:d<=56?2:3;}
+
+function renderWorkout(){
+  const phase=getPhase();
+  const type=getDayType();
+  const day=getDay();
+  const key='p81_workout_'+day;
+  const checked=LS.get(key)||{};
+
+  const labels={1:['Phase 1 — Weeks 1–3','Upper Body Only'],2:['Phase 2 — Weeks 4–8','Full Body'],3:['Phase 3 — Weeks 9–11','Peak Intensity']};
+  document.getElementById('wPhaseName').textContent=labels[phase][0];
+  document.getElementById('wPhaseDetail').textContent=labels[phase][1];
+
+  const toggle=(id)=>{checked[id]=!checked[id];LS.set(key,checked);toast(checked[id]?'✓ Done':'Unmarked');renderWorkout();};
+
+  makeCheckList(document.getElementById('kneeList'),KNEE,checked,toggle,true);
+  makeCheckList(document.getElementById('absList'),ABS[phase],checked,toggle,true);
+
+  const mainTitle=document.getElementById('mainTitle');
+  const mainList=document.getElementById('mainList');
+
+  if(type==='football'){
+    mainTitle.textContent='⚽ Football Day';
+    mainList.innerHTML='<div class="football-msg">Full intensity at training. That is your main workout today.</div>';
+  }else if(type==='sunday'){
+    mainTitle.textContent='😴 Sunday — Recovery';
+    mainList.innerHTML='<div class="football-msg">Light walk only. Let the body recover. ABS still happens.</div>';
+  }else{
+    mainTitle.textContent='💪 Main Workout — Dumbbell';
+    makeCheckList(mainList,MAIN[phase],checked,toggle,true);
+  }
+
+  const allEx=[...KNEE,...ABS[phase],...(type==='dumbbell'?MAIN[phase]:[])];
+  document.getElementById('wDoneCount').textContent=allEx.filter(e=>checked[e.id]).length;
+}
+
+function resetWorkout(){const key='p81_workout_'+getDay();LS.set(key,{});renderWorkout();}
+
+// ── IELTS ────────────────────────────────────────────────
+const IELTS_TASKS=[
+  {id:'shadow',name:'Shadowing Practice',sub:'2-3 min — no skipping, 20-day streak',tag:'ielts'},
+  {id:'vocab',name:'Vocabulary Book',sub:'20 min — read + write new words',tag:'ielts'},
+  {id:'dictation',name:'Dictation',sub:'15 min — train your ear',tag:'ielts'},
+  {id:'reading',name:'Reading Comprehension',sub:'30 min — kind-based past paper',tag:'ielts'},
+  {id:'listening',name:'Listening Comprehension',sub:'30 min — kind-based past paper',tag:'ielts'},
+  {id:'writing',name:'Writing Task 2',sub:'40 min — 250+ words, use ideas book',tag:'ielts'},
+  {id:'speaking',name:'101 History Speaking',sub:'Read event → voice message, no script',tag:'ielts'},
+  {id:'realielts',name:'Real IELTS Material',sub:'Authentic test material practice',tag:'ielts'},
+];
+
+const SKILLS=[
+  {key:'reading',label:'Reading',color:'#88aaff'},
+  {key:'listening',label:'Listening',color:'#ffb464'},
+  {key:'writing',label:'Writing',color:'#ff8888'},
+  {key:'speaking',label:'Speaking',color:'#b8f542'},
+];
+
+function renderIelts(){
+  const day=getDay();
+  const key='p81_ielts_'+day;
+  const checked=LS.get(key)||{};
+  const hIdx=LS.get('p81_hidx')||0;
+  const wIdx=LS.get('p81_widx')||0;
+  const shadow=LS.get('p81_shadow')||{};
+
+  const done=IELTS_TASKS.filter(t=>checked[t.id]).length;
+  document.getElementById('iDoneCount').textContent=done;
+
+  // Skill bars
+  const barsEl=document.getElementById('skillBars');
+  barsEl.innerHTML='';
+  SKILLS.forEach(sk=>{
+    const isDone=!!checked[sk.key];
+    barsEl.innerHTML+=`<div class="skill-bar-wrap"><div class="skill-bar-label"><span style="color:var(--text)">${sk.label}</span><span style="color:${sk.color}">${isDone?'✓ Done today':'—'}</span></div><div class="skill-track"><div class="skill-fill" style="width:${isDone?'100%':'0%'};background:${sk.color}"></div></div></div>`;
+  });
+
+  // Checklist
+  const toggle=(id)=>{checked[id]=!checked[id];LS.set(key,checked);toast(checked[id]?'✓ Done':'Unmarked');renderIelts();};
+  makeCheckList(document.getElementById('ieltsList'),IELTS_TASKS,checked,toggle);
+
+  // History
+  document.getElementById('hNum').textContent='Event #'+(hIdx+1);
+  document.getElementById('hEvent').textContent=HISTORY[hIdx];
+
+  // Writing
+  document.getElementById('wNum').textContent='Topic #'+(wIdx+1);
+  document.getElementById('wTopic').textContent=WRITING[wIdx];
+
+  // Shadow grid
+  const sg=document.getElementById('shadowGrid');
+  sg.innerHTML='';
+  for(let i=1;i<=20;i++){
+    const done=!!shadow[i];
+    const isToday=i===day&&day<=20;
+    const cell=document.createElement('div');
+    cell.className='shadow-cell'+(done?' done':'')+(isToday?' today':'');
+    cell.textContent=i;
+    cell.onclick=()=>{shadow[i]=!shadow[i];LS.set('p81_shadow',shadow);renderIelts();};
+    sg.appendChild(cell);
+  }
+}
+
+function nextH(){const i=(LS.get('p81_hidx')||0);LS.set('p81_hidx',(i+1)%HISTORY.length);renderIelts();}
+function nextW(){const i=(LS.get('p81_widx')||0);LS.set('p81_widx',(i+1)%WRITING.length);renderIelts();}
+function resetIelts(){const key='p81_ielts_'+getDay();LS.set(key,{});renderIelts();}
+
+// ── STREAK ───────────────────────────────────────────────
+function renderStreak(){
+  const day=getDay();
+  const completed=[];
+  for(let i=1;i<=81;i++){if(LS.get('p81_complete_'+i)==='1')completed.push(i);}
+
+  let streak=0;
+  for(let i=day;i>=1;i--){if(LS.get('p81_complete_'+i)==='1')streak++;else break;}
+
+  const pct=Math.round(completed.length/81*100);
+  const circ=276.46;
+  document.getElementById('ringFill').style.strokeDashoffset=circ-(circ*completed.length/81);
+  document.getElementById('ringPct').textContent=pct+'%';
+  document.getElementById('streakNum').textContent=streak;
+  document.getElementById('daysLeft').textContent=Math.max(0,81-day+1);
+
+  const grid=document.getElementById('streakGrid');
+  grid.innerHTML='';
+  for(let i=1;i<=81;i++){
+    const cell=document.createElement('div');
+    cell.className='streak-cell'+(completed.includes(i)?' done':'')+(i===day?' today':'')+(i>day?' future':'');
+    cell.textContent=i;
+    grid.appendChild(cell);
+  }
+}
+
+// ── TAB SWITCHING ────────────────────────────────────────
+function switchTab(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='schedule')renderSchedule();
+  if(name==='workout')renderWorkout();
+  if(name==='ielts')renderIelts();
+  if(name==='streak')renderStreak();
+}
+
+// ── INIT ─────────────────────────────────────────────────
+renderToday();
+renderSchedule();
+</script>
+</body>
+</html>
